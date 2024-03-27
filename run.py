@@ -1,6 +1,7 @@
 import os, asyncio, logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.enums import ParseMode
 
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
@@ -13,7 +14,7 @@ from app.handlers.user_private import user_private_router
 from app.handlers.admin_private import admin_private_router
 
 
-bot = Bot(token=os.getenv('BOT_TOKEN'))
+bot = Bot(token=os.getenv('BOT_TOKEN'), parse_mode=ParseMode.HTML)
 dp = Dispatcher()
 
 bot.my_admins_list = []
@@ -29,7 +30,7 @@ async def on_startup(bot):
     if run_param:
         await drop_db()
     
-    await create_db()
+    await create_db()    
 
 
 async def on_shutdown(bot):
