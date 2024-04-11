@@ -2,7 +2,7 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app.database.models import Banner, Cart, Category, Product, User
+from app.database.models import Banner, Cart, Category, Order, Product, User
 
 
 
@@ -130,6 +130,12 @@ async def orm_drop_user(session: AsyncSession):
     query = delete(User)
     await session.execute(query)
     await session.commit()
+    
+
+async def orm_get_users(session: AsyncSession):
+    query = select(User)
+    result = await session.execute(query)
+    return result.scalars().all()
         
 ######################## Работа с корзинами #######################################
 
@@ -179,3 +185,22 @@ async def orm_drop_cart(session: AsyncSession):
     query = delete(Cart)
     await session.execute(query)
     await session.commit()
+    
+    
+    
+###################################### РАБОТА С ЗАКАЗАМИ #################################
+
+async def orm_add_order(session: AsyncSession, data: dict):
+    print(data)
+    session.add(Order(user_id=data["user_id"], 
+                      products=data["products"], 
+                      phone=data["phone"], 
+                      address=data["address"], 
+                      total_price=data["total_price"]))
+    await session.commit()
+    
+    
+async def orm_get_orders(session: AsyncSession):
+    query = select(Order)
+    result = await session.execute(query)
+    return result.scalars().all()

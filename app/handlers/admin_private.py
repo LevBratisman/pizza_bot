@@ -12,7 +12,9 @@ from app.database.orm_query import (orm_add_product,
                                     orm_get_product, orm_get_products, 
                                     orm_update_product,
                                     orm_get_info_pages,
-                                    orm_change_banner_image)
+                                    orm_change_banner_image,
+                                    orm_get_users,
+                                    orm_get_orders)
 from app.keyboards.inline import get_callback_btns
 from app.keyboards.reply import get_keyboard
 from app.filters.admin import IsAdmin
@@ -28,9 +30,10 @@ ADMIN_KB = get_keyboard(
     "Добавить товар",
     "Ассортимент",
     "Добавить/изменить баннер",
+    "Статистика",
     "Выйти из админ панели",
     placehoder="Выберите действие",
-    sizes=(2, 1, 1)
+    sizes=(2, 2, 1)
 )
 
 state_process_kb = get_keyboard(
@@ -345,3 +348,17 @@ async def get_name(message: Message, state: FSMContext):
     
 
 #########################################################################################
+
+
+################################# Статистика ######################################
+
+
+@admin_private_router.message(F.text == "Статистика")
+async def get_statistic(message: Message, session: AsyncSession):
+    users = await orm_get_users(session)
+    orders = await orm_get_orders(session)
+    
+    await message.answer(f"Всего пользоватей: {len(users)}\nВсего заказов: {len(orders)}")
+    
+    
+    
